@@ -1,0 +1,52 @@
+[{
+  "firstname": "mukesh",
+  "lastname": "Govindaraj",
+  "issetmanual": true,
+  "emailid": "apivision@iMagnumhealthcare.com",
+  "username": "Mukesh",
+  "password": "$2b$12$DW2kPibBICsv0hbRPi0aEOR9V7r6pD3or6ELzfQrTL9Ika0cP4D0m",
+  "MobileCode": "+91",
+  "MobileNumber": "1234567891",
+  "clientdetails": [
+    "68f1dbf56aa92e51d9879efa",
+    "6901b5701fc59bad33da4040",
+    "6904a0901fc59bad33da40a9",
+    "69084fe3271024dad349e43f",
+    "69528c6ac47dbaa699cbfdb0"
+  ],
+  "Defaultclientid": 2004,
+  "Role": "Super Admin",
+  "Shift": "Day Shift",
+  "securityquestion": "whats your childhood nickname",
+  "securityanswer": "$2b$12$ezgD3drdC9uK/CaVgJBhAOJgnYxGWDc9Q1dFKD8DjyM1FNkKnji6a",
+  "isVerified": true,
+  "isFirstTimeLogin": true,
+  "Otp": null,
+  "Otpexpiry": null,
+  "deleted": false,
+  "ClaimTracker": false,
+  "userTag": "",
+  "reportingUser": [
+    "692d2143b522e9d9d7a37eb0",
+    "694144407b72edad2188967e",
+    "69450bc8cba2edcd31678358",
+    "692fdfa84275cb35fe5d9674"
+  ],
+  "createdBy": "admin",
+  "deletedBy": "prasath",
+  "updatedBy": [],
+  "clientId": 2024,
+  "__v": 1,
+  "deletedAt": {
+    "$date": "2025-12-16T20:21:19.169Z"
+  },
+  "updated": [
+    {
+      "updatedBy": "Kavitha",
+      "updatedAt": {
+        "$date": "2025-12-31T10:46:39.118Z"
+      },
+      "process": "Edited user data"
+    }
+  ]
+}]
