@@ -1,0 +1,21 @@
+.shell {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    background-color: var(--bg-app);
+}
+
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    /* Add rounded corner effect for "premium" dashboard look */
+    margin: 0.5rem 0.5rem 0.5rem 0;
+    border-radius: var(--radius-lg);
+    background: var(--bg-panel);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+}

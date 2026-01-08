@@ -1,0 +1,252 @@
+.container {
+    min-height: 100vh;
+    width: 100vw;
+    display: flex;
+    background-color: var(--color-primary);
+    /* Deep Blue Background */
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Left Side - Branding & Illustration area */
+.brandSide {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 3rem;
+    color: white;
+    position: relative;
+    z-index: 10;
+}
+
+.authLogo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.heroText {
+    margin-top: auto;
+    margin-bottom: auto;
+    max-width: 400px;
+}
+
+.heroTitle {
+    font-size: 2.25rem;
+    /* Reduced from 3rem */
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+}
+
+.heroSubtitle {
+    font-size: 1rem;
+    /* Reduced */
+    opacity: 0.9;
+}
+
+/* Right Side - The Form Card */
+.formSide {
+    flex: 1.2;
+    /* Slightly wider */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    /* Reduced */
+    position: relative;
+}
+
+/* The White Card */
+.card {
+    width: 100%;
+    max-width: 440px;
+    /* Reduced from 480px */
+    background: white;
+    border-radius: 1.5rem;
+    /* Large rounded corners per reference */
+    padding: 2rem;
+    /* Reduced from 3rem */
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    /* Reduced gap */
+    position: relative;
+    z-index: 20;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #334155;
+    margin-left: 0.25rem;
+}
+
+.inputWrapper {
+    position: relative;
+}
+
+.input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--border-light);
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    background-color: #f8fafc;
+}
+
+.input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    background-color: white;
+    box-shadow: 0 0 0 4px rgba(0, 82, 204, 0.1);
+}
+
+.forgotPassword {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-align: right;
+    margin-top: 0.25rem;
+    cursor: pointer;
+}
+
+.button {
+    background-color: var(--color-primary);
+    /* Blue */
+    color: white;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.1s, background-color 0.2s;
+    margin-top: 0.5rem;
+}
+
+.button:hover {
+    background-color: #0043a8;
+    transform: translateY(-1px);
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    margin: 1rem 0;
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background-color: var(--border-light);
+}
+
+.divider span {
+    padding: 0 1rem;
+}
+
+.socialLogin {
+    display: flex;
+    gap: 1rem;
+}
+
+.socialBtn {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid var(--border-light);
+    border-radius: 0.75rem;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.socialBtn:hover {
+    background-color: #f8fafc;
+}
+
+.footer {
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-top: 1rem;
+}
+
+.link {
+    color: var(--color-primary);
+    font-weight: 700;
+    margin-left: 0.25rem;
+}
+
+.error {
+    background-color: #fee2e2;
+    color: #991b1b;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    text-align: center;
+}
+
+/* Decoration Circles (mocking the reference flowers/circles) */
+.circle1,
+.circle2 {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.1;
+    background: white;
+}
+
+.circle1 {
+    width: 300px;
+    height: 300px;
+    bottom: -50px;
+    left: -50px;
+}
+
+.circle2 {
+    width: 150px;
+    height: 150px;
+    top: 20%;
+    left: 10%;
+}

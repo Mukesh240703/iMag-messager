@@ -1,0 +1,115 @@
+.container {
+    height: 100%;
+    padding: 2rem;
+    background-color: var(--bg-panel);
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.startCallBtn {
+    background-color: var(--color-accent);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-md);
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.2s;
+}
+
+.startCallBtn:hover {
+    background-color: #d92020;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    overflow-y: auto;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    background-color: #f8fafc;
+    border-radius: var(--radius-md);
+    transition: transform 0.2s;
+    border: 1px solid var(--border-light);
+}
+
+.item:hover {
+    transform: translateX(4px);
+    border-color: #cbd5e1;
+}
+
+.userInfo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: var(--bg-sidebar);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+}
+
+.details {
+    display: flex;
+    flex-direction: column;
+}
+
+.name {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.time {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.icon {
+    width: 16px;
+    height: 16px;
+}
+
+.typeIcon {
+    padding: 0.5rem;
+    border-radius: 50%;
+    background-color: white;
+    border: 1px solid var(--border-light);
+    color: var(--text-secondary);
+}
+
+.missed {
+    color: var(--color-accent);
+}
