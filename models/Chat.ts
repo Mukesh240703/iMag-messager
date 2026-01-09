@@ -8,6 +8,7 @@ export interface IMessage {
         type: string;
         name: string;
     };
+    reactions: { emoji: string; user: string }[];
     createdAt: Date;
     status: 'sent' | 'delivered' | 'seen';
 }
@@ -32,6 +33,10 @@ const MessageSchema = new Schema<IMessage>({
         type: { type: String }, // 'image', 'file'
         name: { type: String }
     },
+    reactions: [{
+        emoji: { type: String },
+        user: { type: String }
+    }],
     createdAt: { type: Date, default: Date.now },
     status: { type: String, enum: ['sent', 'delivered', 'seen'], default: 'sent' }
 });

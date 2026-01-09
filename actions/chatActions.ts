@@ -24,57 +24,62 @@ export async function heartbeat() {
 
 export async function getChats() {
     await connectDB();
-    const session = await getSession();
-    if (!session?.user?.email) return [];
+    try {
+        const session = await getSession();
+        if (!session?.user?.email) return [];
 
-    const currentUserEmail = session.user.email;
-    const currentUserName = session.user.name;
+        const currentUserEmail = session.user.email;
+        const currentUserName = session.user.name;
 
-    // Find chats where user is a participant
-    const chats = await Chat.find({ participants: { $in: [currentUserEmail] } }).sort({ updatedAt: -1 }).lean();
+        // Find chats where user is a participant
+        const chats = await Chat.find({ participants: { $in: [currentUserEmail] } }).sort({ updatedAt: -1 }).lean();
 
-    // Collect all other participants emails to fetch their details
-    const otherEmails = new Set<string>();
-    chats.forEach((chat: any) => {
-        if (chat.type === 'direct') {
-            chat.participants.forEach((p: string) => {
-                if (p !== currentUserEmail) otherEmails.add(p);
-            });
-        }
-    });
+        // Collect all other participants emails to fetch their details
+        const otherEmails = new Set<string>();
+        chats.forEach((chat: any) => {
+            if (chat.type === 'direct') {
+                chat.participants.forEach((p: string) => {
+                    if (p !== currentUserEmail) otherEmails.add(p);
+                });
+            }
+        });
 
-    // Fetch users
-    const users = await User.find({ email: { $in: Array.from(otherEmails) } }).lean();
-    const userMap = new Map(users.map(u => [u.email, u]));
+        // Fetch users
+        const users = await User.find({ email: { $in: Array.from(otherEmails) } }).lean();
+        const userMap = new Map(users.map(u => [u.email, u]));
 
-    // Convert _id to string for serialization & Fix Display Names for Direct Chats
-    return chats.map(chat => {
-        let displayName = chat.name;
-        let avatarColor = chat.avatarColor;
+        // Convert _id to string for serialization & Fix Display Names for Direct Chats
+        return chats.map(chat => {
+            let displayName = chat.name;
+            let avatarColor = chat.avatarColor;
 
-        if (chat.type === 'direct') {
-            const otherEmail = chat.participants.find((p: string) => p !== currentUserEmail);
-            if (otherEmail) {
-                const otherUser = userMap.get(otherEmail);
-                if (otherUser) {
-                    displayName = otherUser.name;
-                    avatarColor = otherUser.avatarColor || avatarColor;
-                    (chat as any).avatarUrl = otherUser.avatarUrl; // Add avatarUrl (casting to any to bypass strict type for now)
-                } else {
-                    displayName = otherEmail; // Fallback
+            if (chat.type === 'direct') {
+                const otherEmail = chat.participants.find((p: string) => p !== currentUserEmail);
+                if (otherEmail) {
+                    const otherUser = userMap.get(otherEmail);
+                    if (otherUser) {
+                        displayName = otherUser.name;
+                        avatarColor = otherUser.avatarColor || avatarColor;
+                        (chat as any).avatarUrl = otherUser.avatarUrl; // Add avatarUrl (casting to any to bypass strict type for now)
+                    } else {
+                        displayName = otherEmail; // Fallback
+                    }
                 }
             }
-        }
 
-        return {
-            ...chat,
-            _id: chat._id.toString(),
-            name: displayName,
-            avatarColor,
-            avatarUrl: (chat as any).avatarUrl,
-            messages: chat.messages?.map((m: any) => ({ ...m, _id: m._id?.toString() }))
-        };
-    });
+            return {
+                ...chat,
+                _id: chat._id.toString(),
+                name: displayName,
+                avatarColor,
+                avatarUrl: (chat as any).avatarUrl,
+                messages: chat.messages?.map((m: any) => ({ ...m, _id: m._id?.toString() }))
+            };
+        });
+    } catch (error) {
+        console.error("Critical Error in getChats:", error);
+        return [];
+    }
 }
 
 export async function seedChats() {
@@ -189,7 +194,8 @@ export async function sendMessage(chatId: string, text: string, attachment?: { u
             text: text || (attachment ? (attachment.type === 'image' ? 'Sent an image' : 'Sent a file') : ''),
             attachment,
             createdAt: new Date(),
-            status: 'sent' as 'sent'
+            status: 'sent' as 'sent',
+            reactions: []
         };
 
         chat.messages.push(newMessage);
@@ -199,7 +205,7 @@ export async function sendMessage(chatId: string, text: string, attachment?: { u
 
         // Clear sender from typing list if they send a message
         if (chat.typingUsers) {
-            chat.typingUsers = chat.typingUsers.filter((u: string) => u !== session.user.email);
+            chat.typingUsers = chat.typingUsers.filter((u: string) => u.toLowerCase() !== session.user.email.toLowerCase());
         }
 
         await chat.save();
@@ -218,10 +224,12 @@ export async function setTypingStatus(chatId: string, isTyping: boolean) {
         const session = await getSession();
         if (!session?.user?.email) return { success: false };
 
+        const email = session.user.email.toLowerCase(); // Enforce lowercase for consistency
+
         if (isTyping) {
-            await Chat.findByIdAndUpdate(chatId, { $addToSet: { typingUsers: session.user.email } });
+            await Chat.findByIdAndUpdate(chatId, { $addToSet: { typingUsers: email } });
         } else {
-            await Chat.findByIdAndUpdate(chatId, { $pull: { typingUsers: session.user.email } });
+            await Chat.findByIdAndUpdate(chatId, { $pull: { typingUsers: email } });
         }
 
         return { success: true };
@@ -259,7 +267,7 @@ export async function getMessages(chatId: string) {
         // Resolve typing users to names
         let typingNames: string[] = [];
         if (chat.typingUsers && chat.typingUsers.length > 0) {
-            const typingEmails = chat.typingUsers.filter((e: string) => e !== currentUserEmail);
+            const typingEmails = chat.typingUsers.filter((e: string) => e.toLowerCase() !== currentUserEmail?.toLowerCase());
             if (typingEmails.length > 0) {
                 const users = await User.find({ email: { $in: typingEmails } }).select('name').lean();
                 typingNames = users.map(u => u.name);
@@ -311,7 +319,8 @@ export async function getMessages(chatId: string) {
                     name: m.attachment.name
                 } : undefined,
                 time: m.createdAt ? new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "",
-                status: status
+                status: status,
+                reactions: m.reactions || []
             };
         });
 
@@ -334,7 +343,7 @@ export async function getMessages(chatId: string) {
 
         return { messages, typingUsers: typingNames, participantsStatus, participantDetails };
     } catch (error) {
-        console.error("Error in getMessages:", error);
+        console.error("Critical Error in getMessages:", error);
         return { messages: [], typingUsers: [], participantsStatus: {}, error: "Failed to fetch messages" };
     }
 }
@@ -378,4 +387,51 @@ export async function deleteMessage(chatId: string, messageId: string) {
     await chat.save();
     revalidatePath('/chat');
     return { success: true };
+}
+
+export async function addReaction(chatId: string, messageId: string, emoji: string) {
+    try {
+        await connectDB();
+        const session = await getSession();
+        if (!session?.user?.email) return { success: false, error: "Not authenticated" };
+
+        const chat = await Chat.findById(chatId);
+        if (!chat) return { success: false, error: "Chat not found" };
+
+        const message = chat.messages.find((m: any) => m._id.toString() === messageId);
+        if (!message) return { success: false, error: "Message not found" };
+
+        // Initialize if undefined
+        if (!message.reactions) message.reactions = [];
+
+        // Check if user already reacted with THIS emoji
+        const existingReactionIndex = message.reactions.findIndex((r: any) => r.user === session.user.email && r.emoji === emoji);
+
+        if (existingReactionIndex > -1) {
+            // Toggle off
+            message.reactions.splice(existingReactionIndex, 1);
+        } else {
+            message.reactions.push({ emoji, user: session.user.email });
+        }
+
+        await chat.save();
+        revalidatePath('/chat');
+        return { success: true };
+    } catch (e) {
+        console.error("AddReaction error:", e);
+        return { success: false, error: "Failed to add reaction" };
+    }
+}
+
+export async function getTotalUnreadCount() {
+    try {
+        await connectDB();
+        const session = await getSession();
+        if (!session?.user?.email) return 0;
+
+        const chats = await Chat.find({ participants: { $in: [session.user.email] } }).select('unreadCount');
+        return chats.reduce((acc, chat) => acc + (chat.unreadCount || 0), 0);
+    } catch (e) {
+        return 0;
+    }
 }

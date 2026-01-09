@@ -1,12 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { MessageSquare, Phone, Calendar as CalendarIcon, LogOut, User } from "lucide-react";
+import { MessageSquare, Phone, Calendar as CalendarIcon, Cloud, Bot, Bell, MoreHorizontal, Plus } from "lucide-react";
 import styles from "./Sidebar.module.css";
 import { cn } from "@/lib/utils";
-import { logout } from "@/actions/authActions";
 import { useState } from "react";
 import ProfileModal from "./ProfileModal";
 
@@ -14,33 +12,32 @@ interface SidebarClientProps {
     userName: string;
     avatarColor?: string;
     avatarUrl?: string;
+    unreadCount?: number;
 }
 
-export default function SidebarClient({ userName, avatarColor, avatarUrl }: SidebarClientProps) {
+export default function SidebarClient({ userName, avatarColor, avatarUrl, unreadCount }: SidebarClientProps) {
     const pathname = usePathname();
+    const [profileOpen, setProfileOpen] = useState(false);
 
     const navItems = [
-        { name: "Chat", href: "/chat", icon: MessageSquare },
-        { name: "Calls", href: "/calls", icon: Phone },
+        { name: "Chat", href: "/chat", icon: MessageSquare, badge: unreadCount },
         { name: "Calendar", href: "/calendar", icon: CalendarIcon },
+        { name: "Calls", href: "/calls", icon: Phone },
+        { name: "OneDrive", href: "#", icon: Cloud, disabled: true },
+        { name: "Copilot", href: "#", icon: Bot, disabled: true },
     ];
 
-    const [profileOpen, setProfileOpen] = useState(false);
+    const bottomItems = [
+        { name: "Activity", href: "#", icon: Bell, disabled: true },
+        { name: "More", href: "#", icon: MoreHorizontal, disabled: true },
+        { name: "Apps", href: "#", icon: Plus, disabled: true },
+    ];
 
     return (
         <>
             <aside className={styles.sidebar}>
-                <div className={styles.logoContainer}>
-                    <Image
-                        src="/logo.png"
-                        alt="iMag Logo"
-                        width={40}
-                        height={40}
-                        className={styles.logoImage}
-                        priority
-                    />
-                    <span className={styles.appName}>iMag-Messager</span>
-                </div>
+                {/* Apps / Top Area */}
+                {/* Using a pseudo-logo or just the top spacing based on image */}
 
                 <nav className={styles.nav}>
                     {navItems.map((item) => {
@@ -48,32 +45,47 @@ export default function SidebarClient({ userName, avatarColor, avatarUrl }: Side
                         const isActive = pathname.startsWith(item.href);
                         return (
                             <Link
-                                key={item.href}
+                                key={item.name}
                                 href={item.href}
                                 className={cn(styles.navItem, isActive && styles.active)}
+                                onClick={(e) => item.disabled && e.preventDefault()}
                             >
-                                <Icon className={styles.icon} />
-                                <span>{item.name}</span>
+                                <div className={styles.iconWrapper}>
+                                    {isActive && <div className={styles.activeIndicator} />}
+                                    <Icon className={styles.icon} strokeWidth={1.5} />
+                                    {item.badge ? (
+                                        <div className={styles.badge}>{item.badge}</div>
+                                    ) : null}
+                                </div>
+                                <span className={styles.label}>{item.name}</span>
                             </Link>
                         );
                     })}
                 </nav>
 
-                <div className={styles.userProfile} onClick={() => setProfileOpen(true)} style={{ cursor: 'pointer' }}>
+                <div className={styles.bottomNav}>
+                    {bottomItems.map((item) => {
+                        const Icon = item.icon;
+                        return (
+                            <button key={item.name} className={styles.navItem} style={{ border: 'none', background: 'transparent' }}>
+                                <div className={styles.iconWrapper}>
+                                    <Icon className={styles.icon} strokeWidth={1.5} />
+                                </div>
+                                <span className={styles.label}>{item.name}</span>
+                            </button>
+                        )
+                    })}
+                </div>
+
+                {/* Profile Avatar at Bottom */}
+                <div className={styles.userProfile} onClick={() => setProfileOpen(true)}>
                     {avatarUrl ? (
-                        <div className={styles.avatar}>
-                            <img src={avatarUrl} alt={userName} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
-                        </div>
+                        <img src={avatarUrl} alt={userName} className={styles.avatarImg} />
                     ) : (
                         <div className={styles.avatar} style={{ backgroundColor: avatarColor || '#0052cc' }}>
                             {userName.substring(0, 2).toUpperCase()}
                         </div>
                     )}
-                    <div className={styles.userInfo}>
-                        <span className={styles.userName}>{userName}</span>
-                        <span className={styles.userStatus}>Online</span>
-                    </div>
-                    {/* Removed direct logout button, moved to modal */}
                 </div>
             </aside>
 
